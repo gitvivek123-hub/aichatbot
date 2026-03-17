@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chatbot</title>
+</head>
+<body>
+
+<h2>AI Chatbot</h2>
+
+<div id="messages" style="height:300px; overflow:auto; border:1px solid gray;"></div>
+
+<input id="msg" placeholder="Ask..." />
+<button onclick="send()">Send</button>
+
+<script>
+function send() {
+    const msg = document.getElementById("msg").value;
+    const messages = document.getElementById("messages");
+
+    messages.innerHTML += "<div><b>You:</b> " + msg + "</div>";
+
+    const botDiv = document.createElement("div");
+    botDiv.innerHTML = "<b>Bot:</b> ";
+    messages.appendChild(botDiv);
+
+    const es = new EventSource("/api/chat-stream?q=" + msg);
+
+    es.onmessage = function(e) {
+        botDiv.innerHTML += e.data;
+    };
+
+    es.onerror = function() {
+        es.close();
+    };
+}
+</script>
+
+</body>
+</html>
